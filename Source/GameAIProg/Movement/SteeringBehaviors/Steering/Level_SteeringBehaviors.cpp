@@ -92,7 +92,10 @@ void ALevel_SteeringBehaviors::Tick(float DeltaTime)
 			//Actor Props
 			if (ImGui::CollapsingHeader("Properties"))
 			{
-				float v = a.Agent->GetMaxLinearSpeed();
+				float v = a.Agent->GetRotation();
+				ImGui::Text(std::format("CurrentRot: {}", v).c_str());
+				
+				v = a.Agent->GetMaxLinearSpeed();
 				if (ImGui::SliderFloat("Lin", &v, 0.f, 600.f, "%.2f"))
 					a.Agent->SetMaxLinearSpeed(v);
 
@@ -141,6 +144,7 @@ void ALevel_SteeringBehaviors::Tick(float DeltaTime)
 				a.SelectedTarget = selectedTargetOffset - 1;
 				bBehaviourModified = true;
 			}
+			
 			
 			ImGui::PopItemWidth();
 			ImGui::PopID();
@@ -225,6 +229,27 @@ void ALevel_SteeringBehaviors::SetAgentBehavior(ImGui_Agent& Agent)
 	
 	switch (static_cast<BehaviorTypes>(Agent.SelectedBehavior))
 	{
+	case BehaviorTypes::Seek:
+		Agent.Behavior = std::make_unique<Seek>();
+		break;
+	case BehaviorTypes::Flee:
+		Agent.Behavior = std::make_unique<Flee>();
+		break;
+	case BehaviorTypes::Arrive:
+		Agent.Behavior = std::make_unique<Arrive>();
+		break;
+	case BehaviorTypes::Face:
+		Agent.Behavior = std::make_unique<Face>();
+		break;
+	case BehaviorTypes::Pursuit:
+		Agent.Behavior = std::make_unique<Pursuit>();
+		break;
+	case BehaviorTypes::Evade:
+		Agent.Behavior = std::make_unique<Evade>();
+		break;
+	case BehaviorTypes::Wander:
+		Agent.Behavior = std::make_unique<Wander>();
+		break;
 	//TODO; Implement behaviors setting here
 	default:
 		assert(false); // Incorrect Agent Behavior gotten during SetAgentBehavior()	

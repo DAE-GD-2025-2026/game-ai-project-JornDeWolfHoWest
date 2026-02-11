@@ -13,8 +13,6 @@ SteeringOutput Seek::CalculateSteering(float DeltaT, ASteeringAgent& agent)
 
 	steering.LinearVelocity = Target.Position - agent.GetPosition();
 
-	// Add debug rendering
-	// TODO
 	if (agent.GetDebugRenderingEnabled())
 	{
 		auto lineEnd{agent.GetPosition() + steering.LinearVelocity.GetSafeNormal() * 100};

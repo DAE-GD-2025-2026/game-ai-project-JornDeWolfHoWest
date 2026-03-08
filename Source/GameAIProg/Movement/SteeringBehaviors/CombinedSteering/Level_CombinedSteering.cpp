@@ -1,4 +1,4 @@
-﻿#include "Level_CombinedSteering.h"
+#include "Level_CombinedSteering.h"
 
 #include "imgui.h"
 
@@ -14,7 +14,16 @@ ALevel_CombinedSteering::ALevel_CombinedSteering()
 void ALevel_CombinedSteering::BeginPlay()
 {
 	Super::BeginPlay();
-
+	agent.Agent = GetWorld()->SpawnActor<ASteeringAgent>(SteeringAgentClass, FVector{0,0,90}, FRotator::ZeroRotator);
+	
+	//std::unique_ptr<ISteeringBehavior> test = std::make_unique<BlendedSteering> {
+	//	{
+	//		{ new Seek{}, 0.4f },
+	//		{ new Wander{}, 0.6f },
+	//	}
+	//};
+	//agent.Behavior = test;
+	//pBlendedSteering = test;
 }
 
 void ALevel_CombinedSteering::BeginDestroy()
@@ -42,7 +51,7 @@ void ALevel_CombinedSteering::Tick(float DeltaTime)
 		ImGui::Indent();
 		ImGui::Text("LMB: place target");
 		ImGui::Text("RMB: move cam.");
-		ImGui::Text("Scrollwheel: zoom cam.");
+		ImGui::Text("Scroll wheel: zoom cam.");
 		ImGui::Unindent();
 	
 		ImGui::Spacing();
@@ -84,19 +93,20 @@ void ALevel_CombinedSteering::Tick(float DeltaTime)
 		ImGui::Text("Behavior Weights");
 		ImGui::Spacing();
 
-
-		// ImGuiHelpers::ImGuiSliderFloatWithSetter("Seek",
-		// 	pBlendedSteering->GetWeightedBehaviorsRef()[0].Weight, 0.f, 1.f,
-		// 	[this](float InVal) { pBlendedSteering->GetWeightedBehaviorsRef()[0].Weight = InVal; }, "%.2f");
+		ImGuiHelpers::ImGuiSliderFloatWithSetter("Seek",
+			pBlendedSteering->GetWeightedBehaviorsRef()[0].Weight, 0.f, 1.f,
+			[this](float InVal) { pBlendedSteering->GetWeightedBehaviorsRef()[0].Weight = InVal; }, "%.2f");
 		//
-		// ImGuiHelpers::ImGuiSliderFloatWithSetter("Wander",
-		// pBlendedSteering->GetWeightedBehaviorsRef()[1].Weight, 0.f, 1.f,
-		// [this](float InVal) { pBlendedSteering->GetWeightedBehaviorsRef()[1].Weight = InVal; }, "%.2f");
+		ImGuiHelpers::ImGuiSliderFloatWithSetter("Wander",
+		pBlendedSteering->GetWeightedBehaviorsRef()[1].Weight, 0.f, 1.f,
+		[this](float InVal) { pBlendedSteering->GetWeightedBehaviorsRef()[1].Weight = InVal; }, "%.2f");
 	
 		//End
 		ImGui::End();
 	}
 #pragma endregion
-
+	
 	// Combined Steering Update
+ // TODO: implement handling mouse click input for seek
+ // TODO: implement Make sure to also evade the wanderer
 }

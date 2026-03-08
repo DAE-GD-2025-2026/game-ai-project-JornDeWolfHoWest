@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <memory>
+
 #include "CoreMinimal.h"
 #include "CombinedSteeringBehaviors.h"
 #include "GameAIProg/Shared/Level_Base.h"
@@ -33,4 +35,14 @@ private:
 	bool CanDebugRender = false;
 
 	
+	struct ImGui_Agent final
+	{
+		ASteeringAgent* Agent{nullptr};
+		std::unique_ptr<ISteeringBehavior> Behavior{nullptr};
+		int SelectedTarget = -1;
+	};
+	
+	ImGui_Agent agent {};
+	
+	std::unique_ptr<BlendedSteering> pBlendedSteering{};
 };

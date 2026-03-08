@@ -78,13 +78,15 @@ private:
 	FVector2D lastTargetPosition;
 };
 
-class Evade : public ISteeringBehavior
+class Evade : public Pursuit
 {
 public:
-	Evade() = default;
+	Evade() : EvasionRadius(500.f) {};
+	Evade(const float evasionDistance) : EvasionRadius(evasionDistance) {};
 	virtual ~Evade() = default;
 
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent& agent);
+	const float EvasionRadius;
 };
 class Wander : public Seek
 {
@@ -93,4 +95,13 @@ public:
 	virtual ~Wander() = default;
 
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent& agent);
+	
+	void SetWanderOffset(float offset) { m_OffsetDistance = offset; }
+	void SetWanderRadius(float radius) { m_Radius = radius; }
+	void SetMaxAngleChange(float rad) { m_MaxAngleChange = rad; }
+private:
+	float m_OffsetDistance{ 150.f };
+	float m_Radius{ 4.f };
+	float m_MaxAngleChange{ FMath::DegreesToRadians(45)};
+	float m_WanderAngle{ 0.f };
 };

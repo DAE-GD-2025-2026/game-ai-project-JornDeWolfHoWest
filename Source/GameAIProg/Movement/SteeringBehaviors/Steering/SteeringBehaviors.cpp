@@ -89,11 +89,37 @@ SteeringOutput Pursuit::CalculateSteering(float DeltaT, ASteeringAgent& agent)
 
 SteeringOutput Evade::CalculateSteering(float DeltaT, ASteeringAgent& agent)
 {
-	return SteeringOutput{};
+	auto steeringOutput = Pursuit::CalculateSteering(DeltaT, agent);
+
+	float distance = (agent.GetPosition() -Target.Position).Length();
+	if (distance > EvasionRadius)
+	{
+		steeringOutput.IsValid = false;
+		return steeringOutput;
+	}
+	
+	steeringOutput *= -1;
+	return steeringOutput;
 }
 
 SteeringOutput Wander::CalculateSteering(float DeltaT, ASteeringAgent& agent)
 {
+	float randomChange = FMath::FRandRange(-m_MaxAngleChange, m_MaxAngleChange);
+	m_WanderAngle += randomChange;
+	
+	float orientation = agent.GetRotation();
+	
+	FVector2D forward;
+	forward.X = FMath::Cos(orientation);
+	forward.Y = FMath::Sin(orientation);
+	
+	FVector2D circleCenter = agent.GetPosition() + forward * m_OffsetDistance;
+	
+	FVector2D displacement;
+	displacement.X = m_Radius * FMath::Cos(m_WanderAngle);
+	displacement.Y = m_Radius * FMath::Sin(m_WanderAngle);
+	
+	Target.Position = circleCenter + displacement;
 	
 	return Seek::CalculateSteering(DeltaT, agent);
 }

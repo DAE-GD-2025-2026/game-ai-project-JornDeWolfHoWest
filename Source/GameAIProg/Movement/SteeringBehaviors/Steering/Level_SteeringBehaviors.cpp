@@ -79,6 +79,20 @@ void ALevel_SteeringBehaviors::Tick(float DeltaTime)
 	if (ImGui::Button("Add Agent"))
 		AddAgent(BehaviorTypes::Seek);
 	ImGui::Separator();
+	
+	ImGui::Text("All agents rendering mode");
+	if (ImGui::Button("Enable all"))
+	{
+		for (auto const & a : SteeringAgents)
+			a.Agent->SetDebugRenderingEnabled(true);
+	}
+		
+	if (ImGui::Button("Disable all"))
+	{
+		for (auto const & a : SteeringAgents)
+			a.Agent->SetDebugRenderingEnabled(false);
+	}
+	ImGui::Separator();
 
 	for (int i{0}; i < SteeringAgents.size(); ++i)
 	{
@@ -117,7 +131,7 @@ void ALevel_SteeringBehaviors::Tick(float DeltaTime)
 			ImGui::PushItemWidth(100);
 
 			// Add the names of your steering behaviors
-			if (ImGui::Combo("", &a.SelectedBehavior, "Seek\0Wander\0Flee\0Arrive\0Evade\0Pursuit", 4))
+			if (ImGui::Combo("", &a.SelectedBehavior, "Seek\0Wander\0Flee\0Arrive\0Evade\0Pursuit\0Face", 4))
 			{
 				bBehaviourModified = true;
 			}

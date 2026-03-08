@@ -11,18 +11,40 @@ BlendedSteering::BlendedSteering(const std::vector<WeightedBehavior>& WeightedBe
 //BLENDED STEERING
 SteeringOutput BlendedSteering::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
-	SteeringOutput BlendedSteering = {};
-	//TODO: Calculate the weighted average steeringbehavior
+	SteeringOutput blendedSteering = {};
 
-	if (Agent.GetDebugRenderingEnabled())
-		DrawDebugDirectionalArrow(
-			Agent.GetWorld(),
-			Agent.GetActorLocation(),
-			Agent.GetActorLocation() + FVector{BlendedSteering.LinearVelocity, 0} * (Agent.GetMaxLinearSpeed() * DeltaT),
-			30.f, FColor::Red
-			);
+	float totalWeight = 0.f;
 
-	return BlendedSteering;
+	for (const auto& behavior : WeightedBehaviors)
+	{
+		const auto& steering = behavior.pBehavior->CalculateSteering(DeltaT, Agent);
+		if (!steering.IsValid)
+			continue;
+		blendedSteering.LinearVelocity += steering.LinearVelocity * behavior.Weight;
+		blendedSteering.AngularVelocity += steering.AngularVelocity * behavior.Weight;
+		totalWeight += behavior.Weight;
+	}
+
+	if (totalWeight > 0.f)
+		blendedSteering /= totalWeight;
+	
+	return blendedSteering;
+}
+
+float* BlendedSteering::GetWeight(ISteeringBehavior* const SteeringBehavior)
+{
+	auto it = find_if(WeightedBehaviors.begin(),
+		WeightedBehaviors.end(),
+		[SteeringBehavior](const WeightedBehavior& Elem)
+		{
+			return Elem.pBehavior == SteeringBehavior;
+		}
+	);
+
+	if(it!= WeightedBehaviors.end())
+		return &it->Weight;
+	
+	return nullptr;
 }
 
 //*****************

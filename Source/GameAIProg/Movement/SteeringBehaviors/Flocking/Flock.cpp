@@ -40,7 +40,7 @@ Flock::Flock(
 	);
 	
 	Agents.Reserve(FlockSize);
-	for (int i = 0; i < FlockSize; ++i)
+	for (int i = 0; i < FlockSize;)
 	{
 		Agents[i] = pWorld->SpawnActor<ASteeringAgent>(AgentClass, FVector{ FMath::RandRange(0.f, WorldSize), FMath::RandRange(0.f, WorldSize),90}, FRotator::ZeroRotator);
 		if (Agents[i])
@@ -48,9 +48,8 @@ Flock::Flock(
 			Agents[i]->SetSteeringBehavior(pBlendedSteering.get());
 			Agents[i]->SetIsAutoOrienting(true);
 			Agents[i]->SetMaxLinearSpeed(500);
+			++i;
 		}
-		else
-			--i;
 	}
 
 	pPrioritySteering = std::make_unique<PrioritySteering>(
